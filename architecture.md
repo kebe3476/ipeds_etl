@@ -5,7 +5,7 @@ This document covers the database layout (schemas, roles, views), maintenance pr
 ---
 
 ## 1) Database Layout (`ipeds_db/`)
-
+```
 ipeds_db/
 ├─ schemas/
 │ ├─ ipeds_raw/ # raw API payloads (JSON + metadata, append-only)
@@ -27,7 +27,7 @@ ipeds_db/
 └─ lineage/
 ├─ load_log # per-run counts, timestamps, endpoint/year
 └─ source_trace # source_url, source_hash, ingested_at, load_ts
-
+```
 
 ### Schemas
 
@@ -101,7 +101,7 @@ Purpose: trust, auditability, and troubleshooting (what changed, when, why, and 
 ---
 
 ## 5) ETL Package Layout (`ipeds-etl/`)
-
+```
 ipeds-etl/
 ├─ notebooks/
 │ ├─ 00_env_check.ipynb # sanity: connect to Postgres, check schemas
@@ -115,7 +115,7 @@ ipeds-etl/
 │ ├─ db.py # SQLAlchemy engine, run_sql, run_many
 │ ├─ raw_io.py # create raw tables, insert JSON payloads
 │ ├─ core_io.py # create core tables, UPSERT
-│ ├─ casting.py # handle -1/-2/-3 → NULL, type coercions
+│ ├─ casting.py # handle -1/-2/-3 → NULL
 │ ├─ registry.py # endpoint catalog (path, schema, PK, mapper)
 │ ├─ mappers/
 │ │ ├─ directory.py # JSON → typed dict for Directory
@@ -125,7 +125,7 @@ ipeds-etl/
 ├─ sql/
 │ ├─ 00_schemas.sql # CREATE SCHEMA ipeds_raw/core/vw
 │ ├─ 20_core_indexes.sql # optional extra indexes
-│ └─ 90_views_examples.sql # optional BI views & materializations
+│ └─ 90_views_examples.sql # example BI views & materializations
 │
 ├─ config/
 │ ├─ .env.example # DATABASE_URL=...
@@ -135,6 +135,7 @@ ipeds-etl/
 │ ├─ test_casting.py # -1/-2/-3 handling
 │ ├─ test_registry.py # schema/PK sanity
 │ └─ test_end_to_end_small.py # smoke test on tiny slice
+```
 
 **Module notes**
 - `config.py` — API base (Urban Institute IPEDS), DB URL, rate limits.  
