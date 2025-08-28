@@ -44,8 +44,7 @@ jupyter lab
 Open notebooks/10_load_endpoint.ipynb and load e.g. Admissions 2015–2020.
 
 Project Structure (high level)
-graphql
-Copy code
+
 ipeds-etl/
 ├─ notebooks/        # Jupyter entry points
 ├─ etl/              # Python ETL engine (http/db/raw_io/core_io/etc.)
