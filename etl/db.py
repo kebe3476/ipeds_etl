@@ -39,6 +39,67 @@ _engine: Engine = create_engine(
 # - If you ever need different roles (e.g., reader vs loader), you can add a
 #   second factory function later without breaking callers.
 
+def get_sqlalchemy_engine(echo: bool | None = None) -> Engine:
+    """
+    Return a SQLAlchemy Engine for database work.
+
+    Why this helper exists
+    ----------------------
+    - Encapsulates access to the module-level `_engine` so other modules don't
+      reach into private globals.
+    - Allows callers (e.g., ad-hoc notebooks) to temporarily change the SQL
+      echo/verbosity **without** mutating the shared engine used by the rest
+      of the app.
+
+    Parameters
+    ----------
+    echo : bool | None
+        - None (default): return the shared module-level engine `_engine` as-is.
+        - True/False: if this differs from `_engine.echo`, build and return a
+          *separate, throwaway* Engine with that echo setting. This does NOT
+          replace `_engine`; it’s just for the caller’s immediate use.
+
+    Returns
+    -------
+    Engine
+        Either the shared `_engine` (preferred path) or a short-lived Engine
+        configured with the requested `echo` behavior.
+
+    Behavior & Rationale
+    --------------------
+    - We avoid mutating `_engine.echo` at runtime so other threads/notebooks
+      aren’t surprised by suddenly-verbose (or suddenly-quiet) logs.
+    - Creating an Engine is relatively cheap, but it still allocates a pool.
+      If you request a custom-echo engine, use it in a tight scope (e.g., with
+      a context manager) and let it go out of scope so the pool can be GC’d.
+    - Both engines use `pool_pre_ping=True` to reduce “stale connection” errors
+      after idle periods.
+
+    Example
+    -------
+    >>> # Normal usage (shared engine):
+    >>> eng = get_sqlalchemy_engine()
+    >>> with eng.begin() as cx:
+    ...     cx.execute(text("SELECT 1"))
+
+    >>> # Ad-hoc verbose SQL logging in a notebook cell:
+    >>> eng_loud = get_sqlalchemy_engine(echo=True)
+    >>> with eng_loud.begin() as cx:
+    ...     cx.execute(text("SELECT 1"))
+    """
+    # If the caller explicitly asked for a specific echo setting AND it does not
+    # match the shared engine's current setting, return a new, temporary Engine
+    # with the requested verbosity. We don't overwrite the shared `_engine`.
+    if echo is not None and echo != _engine.echo:
+        return create_engine(
+            settings.DATABASE_URL,   # same connection target
+            pool_pre_ping=True,      # same resilience against stale conns
+            echo=echo,               # caller-requested verbosity
+        )
+
+    # Otherwise: return the shared, long-lived Engine (preferred).
+    return _engine
+
 
 # -----------------------------------------------------------------------------
 # Simple health checks / utilities
