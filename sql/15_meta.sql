@@ -75,6 +75,6 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA ipeds_meta
   - ipeds_loader → writes lineage (insert rows into load_log/source_trace)
   - ipeds_reader → can query lineage (read-only)
   - bi_user      → can query lineage (read-only)
-  This gives you a permanent “black box recorder” of ETL activity.
+  This gives you a permanent black box recorder of ETL activity.
 ------------------------------------------------------------------------------
 */
