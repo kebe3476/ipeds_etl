@@ -35,6 +35,14 @@ REVOKE ALL ON SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA ipeds_raw, ipeds_core, ipeds_dim, ipeds_vw 
   TO ipeds_reader, bi_user, ipeds_loader;
 
+-- ipeds_meta: lineage/audit logs
+-- Loader must be able to create tables here (e.g., ingest_log)
+GRANT USAGE, CREATE ON SCHEMA ipeds_meta TO ipeds_loader;
+ALTER SCHEMA ipeds_meta OWNER TO ipeds_loader;
+
+-- Reader + BI can see ipeds_meta but not create
+GRANT USAGE ON SCHEMA ipeds_meta TO ipeds_reader, bi_user;
+
 -- ============================================================================
 -- 4. Table-level privileges
 --    Assign specific abilities per role and schema

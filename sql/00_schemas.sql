@@ -20,6 +20,7 @@ CREATE SCHEMA IF NOT EXISTS ipeds_raw;
 CREATE SCHEMA IF NOT EXISTS ipeds_core;
 CREATE SCHEMA IF NOT EXISTS ipeds_dim;
 CREATE SCHEMA IF NOT EXISTS ipeds_vw;
+CREATE SCHEMA IF NOT EXISTS ipeds_meta;
 
 -- (Optional: explicitly note public is off-limits)
 COMMENT ON SCHEMA public IS 'Default Postgres schema (not used for IPEDS data).';
@@ -31,6 +32,7 @@ COMMENT ON SCHEMA ipeds_raw  IS 'Raw API payloads (JSON + metadata, append-only)
 COMMENT ON SCHEMA ipeds_core IS 'Cleaned & typed tables (analysis-ready, stable keys)';
 COMMENT ON SCHEMA ipeds_dim  IS 'Lookup/dimension tables for readable labels';
 COMMENT ON SCHEMA ipeds_vw   IS 'BI-friendly views (joins, denormalized shapes)';
+COMMENT ON SCHEMA ipeds_meta IS 'Lineage + audit logs (ETL run history, source hashes)';
 
 -- ============================================================================
 -- End of Script
